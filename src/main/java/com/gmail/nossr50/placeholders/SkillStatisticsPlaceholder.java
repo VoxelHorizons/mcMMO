@@ -90,6 +90,13 @@ public final class SkillStatisticsPlaceholder implements Placeholder {
             case "herbalism_fdr" -> rank(player, SubSkillType.HERBALISM_FARMERS_DIET);
             case "herbalism_gts" -> rank(player, SubSkillType.HERBALISM_GREEN_THUMB);
 
+            // Super Breaker's triple result is gated by the Double Drops roll;
+            // Mother Lode has its own independent triple drop check.
+            case "mining_tdc" -> config.getAllowMiningTripleDrops()
+                    ? ProbabilityUtil.getRNGDisplayValues(mmo,
+                            SubSkillType.MINING_DOUBLE_DROPS)[0] : "0.00%";
+            case "mining_mother_lode" -> ProbabilityUtil.getRNGDisplayValues(mmo,
+                    SubSkillType.MINING_MOTHER_LODE)[0];
             case "mining_sbl" -> abilityLength(mmo, PrimarySkillType.MINING);
             case "mining_ob" -> percent(mmo.getMiningManager().getOreBonus() * 100D);
             case "mining_dm" -> integer(mmo.getMiningManager().getDropMultiplier());
@@ -148,7 +155,7 @@ public final class SkillStatisticsPlaceholder implements Placeholder {
             case "herbalism_ddc" -> SubSkillType.HERBALISM_DOUBLE_DROPS;
             case "herbalism_gtc" -> SubSkillType.HERBALISM_GREEN_THUMB;
             case "mining_ddc" -> SubSkillType.MINING_DOUBLE_DROPS;
-            case "mining_tdc" -> SubSkillType.MINING_MOTHER_LODE;
+
             case "repair_src" -> SubSkillType.REPAIR_SUPER_REPAIR;
             case "smelting_ssc" -> SubSkillType.SMELTING_SECOND_SMELT;
             case "swords_cac" -> SubSkillType.SWORDS_COUNTER_ATTACK;
