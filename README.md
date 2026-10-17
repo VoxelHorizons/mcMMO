@@ -27,7 +27,24 @@ If you are using maven, you can add mcMMO API to your plugin by adding it to pom
 </dependency>
 ```
 ### Builds
-Currently, you can obtain our builds via Spigot or Polymart:
+
+**VoxelHorizons fork:** Every source change and pull request builds a downloadable
+`mcMMO.jar` using GitHub Actions. Builds can also be started manually.
+
+1. Open [GitHub Actions → Build mcMMO JAR](https://github.com/VoxelHorizons/mcMMO/actions/workflows/maven.yml).
+2. Select a successful workflow run (green checkmark). To build on demand, click **Run workflow** and select the branch.
+3. Under **Artifacts**, download **mcMMO-JAR** and extract the ZIP.
+4. Place `mcMMO.jar` in your server's `plugins/` directory and restart the server. Remove any older mcMMO plugin JAR before installing.
+
+Each artifact includes `SHA256SUMS` to verify the download. Artifacts are retained
+for 30 days and require a signed-in GitHub account to download. The workflow
+runs Maven compilation and the default test suite before uploading the
+shaded plugin; build failures do not upload a potentially broken JAR.
+This workflow builds the upstream project's current Spigot 1.20.5 API
+target; **a successful compile alone does not certify compatibility with
+Minecraft 26.2**. Test on a staging server first.
+
+**Upstream official downloads:**
 
 http://spigot.mcmmo.org
 
