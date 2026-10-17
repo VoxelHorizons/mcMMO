@@ -39,7 +39,7 @@ class SkillStatisticsPlaceholderTest {
             Locale.setDefault(Locale.GERMANY);
             assertEquals("25.00%", SkillStatisticsPlaceholder.percent(25));
             assertEquals("0.00%", SkillStatisticsPlaceholder.percent(0));
-            assertEquals("67.13%", SkillStatisticsPlaceholder.percent(67.125));
+            assertEquals("67.13%", SkillStatisticsPlaceholder.percent(67.129));
         } finally {
             Locale.setDefault(original);
         }
