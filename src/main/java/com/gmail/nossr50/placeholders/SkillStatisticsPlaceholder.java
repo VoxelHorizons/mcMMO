@@ -136,7 +136,7 @@ public final class SkillStatisticsPlaceholder implements Placeholder {
     }
 
     /** Only actual probability skills should use the generic configurable RNG formula. */
-    private static SubSkillType probabilityFor(String key) {
+    static SubSkillType probabilityFor(String key) {
         return switch (key) {
             case "acrobatics_rc" -> SubSkillType.ACROBATICS_ROLL;
             case "acrobatics_dc" -> SubSkillType.ACROBATICS_DODGE;
@@ -202,7 +202,7 @@ public final class SkillStatisticsPlaceholder implements Placeholder {
         return integer(length);
     }
 
-    private static String percent(double value) {
+    static String percent(double value) {
         return new DecimalFormat("0.00'%'",
                 DecimalFormatSymbols.getInstance(Locale.US)).format(value);
     }
