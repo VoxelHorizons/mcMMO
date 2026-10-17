@@ -20,8 +20,9 @@ class SkillStatisticsPlaceholderTest {
     void usesActualModernProbabilitySkills() {
         assertEquals(SubSkillType.MINING_DOUBLE_DROPS,
                 SkillStatisticsPlaceholder.probabilityFor("mining_ddc"));
-        assertEquals(SubSkillType.MINING_MOTHER_LODE,
-                SkillStatisticsPlaceholder.probabilityFor("mining_tdc"));
+        // Super Breaker uses the Double Drops probability, not Mother Lode.
+        // Its display is resolved separately to respect AllowMiningTripleDrops.
+        assertNull(SkillStatisticsPlaceholder.probabilityFor("mining_tdc"));
         assertEquals(SubSkillType.HERBALISM_DOUBLE_DROPS,
                 SkillStatisticsPlaceholder.probabilityFor("herbalism_ddc"));
         assertEquals(SubSkillType.ACROBATICS_DODGE,
