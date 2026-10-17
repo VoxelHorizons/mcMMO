@@ -243,6 +243,9 @@ public class PapiExpansion extends PlaceholderExpansion {
      * Performs one-time placeholder registration for all supported tokens.
      */
     protected void init() {
+        // %mcmmo_stats:<skill>_<metric>% uses the actual mcMMO skill formulas.
+        registerPlaceholder(new SkillStatisticsPlaceholder());
+
         for (PrimarySkillType skill : PrimarySkillType.values()) {
             // %mcmmo_level_<skillname>%
             registerPlaceholder(new SkillLevelPlaceholder(this, skill));
