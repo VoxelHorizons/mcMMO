@@ -1,52 +1,67 @@
-# This workflow automatically tests new commits and pull requests as they come in.
-# Note that this does not upload any artifacts, you will need to compile mcMMO manually
-# if you wish to create the actual jar.
-name: Compile and test
+# Build the shaded mcMMO plugin and make it downloadable from Actions.
+name: Build mcMMO JAR
 
 on:
-  # We run our tests whenever the pom or a source file was touched.
-  # There is no need to run Maven when only the changelog was touched.
-  # We may also want to re-run this workflow when the workflow file itself
-  # was updated too.
   push:
+    branches:
+      - '**'
     paths:
-    - 'src/**'
-    - 'pom.xml'
-    - '.github/workflows/maven.yml'
-
-  # Whenever someone submits a new pull request which modified the pom or a source file,
-  # we want to ensure it compiles successfully and that all tests will pass.
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/maven.yml'
   pull_request:
     paths:
-    - 'src/**'
-    - 'pom.xml'
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/maven.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  compile:
-    name: Maven compiler
+  build:
+    name: Build and upload mcMMO
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
 
-    # 1. Check out the current working tree
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Set up Java 17 and cache Maven dependencies
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
 
-    # 2. Setup Java 17 JDK (Adopt)
-    - name: Java 17 setup
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'adopt'
-        java-package: jdk
-        java-version: '17'
+      - name: Compile, test and package
+        run: mvn --batch-mode --no-transfer-progress clean verify -DdisableXmlReport=true
 
-    # 3. Setup local Maven package cache to speed up building
-    - name: Cache Maven packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+      - name: Verify and stage runnable plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s target/mcMMO.jar
+          jar tf target/mcMMO.jar | grep -qx 'plugin.yml'
+          jar tf target/mcMMO.jar | grep -qx 'com/gmail/nossr50/mcMMO.class'
+          mkdir -p dist
+          cp target/mcMMO.jar dist/mcMMO.jar
+          (
+            cd dist
+            sha256sum mcMMO.jar > SHA256SUMS
+          )
+          echo "Plugin version:"
+          unzip -p dist/mcMMO.jar plugin.yml | grep -m1 '^version:'
+          echo "Artifact checksum:"
+          cat dist/SHA256SUMS
 
-    # 4. Build via Maven 
-    - name: Build via Maven
-      run: mvn verify -B -Psql-tests --file pom.xml -DdisableXmlReport=true
+      - name: Upload downloadable JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcMMO-JAR
+          path: |
+            dist/mcMMO.jar
+            dist/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
